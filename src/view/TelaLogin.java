@@ -19,53 +19,59 @@ public class TelaLogin extends JFrame {
         controller = new AuthController();
 
         setTitle("KeePasso - Autenticação");
-        setSize(420, 520);
+
+        // --- ABRIR EM ECRÃ INTEIRO ---
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
 
-        // Painel Personalizado com Gradiente de Fundo (Efeito CSS linear-gradient)
-        JPanel panelMain = new JPanel() {
+        // Painel Principal de Fundo com Gradiente
+        JPanel panelBackground = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Gradiente suave de roxo escuro para azul noite
                 GradientPaint gp = new GradientPaint(0, 0, new Color(30, 31, 48), 0, getHeight(), new Color(15, 16, 25));
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
+        panelBackground.setLayout(new GridBagLayout()); // Centraliza o Cartão de Login no meio da tela
+        add(panelBackground);
 
-        panelMain.setLayout(new GridBagLayout());
-        panelMain.setBorder(new EmptyBorder(30, 40, 30, 40));
-        add(panelMain);
+        // Cartão Central de Login (caixa interna elegante)
+        JPanel panelCard = new JPanel();
+        panelCard.setOpaque(false);
+        panelCard.setLayout(new GridBagLayout());
+        panelCard.setPreferredSize(new Dimension(380, 480));
+        panelBackground.add(panelCard);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(8, 0, 8, 0);
 
-        // Ícone/Logo em Texto Embutido
+        // Ícone / Logo
         JLabel lblLogo = new JLabel("🔒", SwingConstants.CENTER);
-        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 42));
+        lblLogo.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 46));
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        panelMain.add(lblLogo, gbc);
+        panelCard.add(lblLogo, gbc);
 
-        // Título Principal com cor Neon/Branca
+        // Título Principal
         JLabel lblTitulo = new JLabel("KeePasso", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 32));
         lblTitulo.setForeground(Color.WHITE);
         gbc.gridy = 1;
-        panelMain.add(lblTitulo, gbc);
+        panelCard.add(lblTitulo, gbc);
 
-        // Subtítulo em tom pastel
+        // Subtítulo
         JLabel lblSubtitulo = new JLabel("Gerenciador de Senhas Seguro", SwingConstants.CENTER);
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblSubtitulo.setForeground(new Color(160, 174, 192));
         gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        panelMain.add(lblSubtitulo, gbc);
+        gbc.insets = new Insets(0, 0, 25, 0);
+        panelCard.add(lblSubtitulo, gbc);
 
         // Rótulo E-mail
         JLabel lblEmail = new JLabel("E-mail");
@@ -73,9 +79,9 @@ public class TelaLogin extends JFrame {
         lblEmail.setForeground(new Color(226, 232, 240));
         gbc.gridy = 3;
         gbc.insets = new Insets(5, 0, 2, 0);
-        panelMain.add(lblEmail, gbc);
+        panelCard.add(lblEmail, gbc);
 
-        // Campo E-mail Estilizado
+        // Campo E-mail
         txtEmail = new JTextField();
         txtEmail.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtEmail.setBackground(new Color(45, 55, 72));
@@ -86,7 +92,7 @@ public class TelaLogin extends JFrame {
             BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
         gbc.gridy = 4;
-        panelMain.add(txtEmail, gbc);
+        panelCard.add(txtEmail, gbc);
 
         // Rótulo Senha
         JLabel lblSenha = new JLabel("Senha");
@@ -94,9 +100,9 @@ public class TelaLogin extends JFrame {
         lblSenha.setForeground(new Color(226, 232, 240));
         gbc.gridy = 5;
         gbc.insets = new Insets(10, 0, 2, 0);
-        panelMain.add(lblSenha, gbc);
+        panelCard.add(lblSenha, gbc);
 
-        // Campo Senha Estilizado
+        // Campo Senha
         txtSenha = new JPasswordField();
         txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtSenha.setBackground(new Color(45, 55, 72));
@@ -107,21 +113,21 @@ public class TelaLogin extends JFrame {
             BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
         gbc.gridy = 6;
-        panelMain.add(txtSenha, gbc);
+        panelCard.add(txtSenha, gbc);
 
-        // Botão Entrar Customizado (Estilo Arredondado + Efeito Hover CSS)
+        // Botão Entrar
         btnEntrar = criarBotaoEstilizado("Entrar", new Color(99, 102, 241), new Color(129, 140, 248));
         gbc.gridy = 7;
         gbc.insets = new Insets(25, 0, 10, 0);
-        panelMain.add(btnEntrar, gbc);
+        panelCard.add(btnEntrar, gbc);
 
-        // Botão Cadastrar (Transparente/Outline)
+        // Botão Criar nova conta
         btnCadastrar = criarBotaoOutline("Criar nova conta");
         gbc.gridy = 8;
         gbc.insets = new Insets(0, 0, 0, 0);
-        panelMain.add(btnCadastrar, gbc);
+        panelCard.add(btnCadastrar, gbc);
 
-        // Ações dos Botões
+        // Ações
         btnEntrar.addActionListener(e -> acaoLogin());
         btnCadastrar.addActionListener(e -> {
             new TelaCadastro().setVisible(true);
@@ -129,7 +135,6 @@ public class TelaLogin extends JFrame {
         });
     }
 
-    // Método Auxiliar para Botão com Gradiente e Arredondado
     private JButton criarBotaoEstilizado(String texto, Color corPadrao, Color corHover) {
         JButton btn = new JButton(texto) {
             @Override
@@ -156,7 +161,6 @@ public class TelaLogin extends JFrame {
         return btn;
     }
 
-    // Método Auxiliar para Botão estilo "Outline"
     private JButton criarBotaoOutline(String texto) {
         JButton btn = new JButton(texto);
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 13));

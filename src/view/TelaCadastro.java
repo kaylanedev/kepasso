@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import controller.AuthController;
 
 public class TelaCadastro extends JFrame {
@@ -21,76 +20,76 @@ public class TelaCadastro extends JFrame {
         controller = new AuthController();
 
         setTitle("KeePasso - Novo Cadastro");
-        setSize(440, 580);
+
+        // --- ABRIR EM ECRÃ INTEIRO ---
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
+        setResizable(true);
 
-        // Painel Personalizado com Gradiente de Fundo (Combinando com o Login)
-        JPanel panelMain = new JPanel() {
+        // Fundo Gradiente
+        JPanel panelBackground = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Gradiente suave de roxo escuro para azul noite
                 GradientPaint gp = new GradientPaint(0, 0, new Color(30, 31, 48), 0, getHeight(), new Color(15, 16, 25));
                 g2d.setPaint(gp);
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         };
+        panelBackground.setLayout(new GridBagLayout());
+        add(panelBackground);
 
-        panelMain.setLayout(new GridBagLayout());
-        panelMain.setBorder(new EmptyBorder(25, 40, 25, 40));
-        add(panelMain);
+        // Cartão Central de Cadastro
+        JPanel panelCard = new JPanel();
+        panelCard.setOpaque(false);
+        panelCard.setLayout(new GridBagLayout());
+        panelCard.setPreferredSize(new Dimension(400, 540));
+        panelBackground.add(panelCard);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(4, 0, 4, 0);
 
-        // Título Principal
         JLabel lblTitulo = new JLabel("Criar Conta", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 30));
         lblTitulo.setForeground(Color.WHITE);
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        panelMain.add(lblTitulo, gbc);
+        panelCard.add(lblTitulo, gbc);
 
-        // Subtítulo
         JLabel lblSub = new JLabel("Preencha seus dados abaixo", SwingConstants.CENTER);
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         lblSub.setForeground(new Color(160, 174, 192));
         gbc.gridy = 1; gbc.insets = new Insets(0, 0, 15, 0);
-        panelMain.add(lblSub, gbc);
+        panelCard.add(lblSub, gbc);
 
-        // Campo Nome
-        panelMain.add(criarLabel("Nome"), ajustarGbc(gbc, 2));
+        // Campos
+        panelCard.add(criarLabel("Nome"), ajustarGbc(gbc, 2));
         txtNome = criarTextField();
-        panelMain.add(txtNome, ajustarGbc(gbc, 3));
+        panelCard.add(txtNome, ajustarGbc(gbc, 3));
 
-        // Campo E-mail
-        panelMain.add(criarLabel("E-mail"), ajustarGbc(gbc, 4));
+        panelCard.add(criarLabel("E-mail"), ajustarGbc(gbc, 4));
         txtEmail = criarTextField();
-        panelMain.add(txtEmail, ajustarGbc(gbc, 5));
+        panelCard.add(txtEmail, ajustarGbc(gbc, 5));
 
-        // Campo Senha
-        panelMain.add(criarLabel("Senha"), ajustarGbc(gbc, 6));
+        panelCard.add(criarLabel("Senha"), ajustarGbc(gbc, 6));
         txtSenha = criarPasswordField();
-        panelMain.add(txtSenha, ajustarGbc(gbc, 7));
+        panelCard.add(txtSenha, ajustarGbc(gbc, 7));
 
-        // Campo Confirmar Senha
-        panelMain.add(criarLabel("Confirmar Senha"), ajustarGbc(gbc, 8));
+        panelCard.add(criarLabel("Confirmar Senha"), ajustarGbc(gbc, 8));
         txtConfirmaSenha = criarPasswordField();
-        panelMain.add(txtConfirmaSenha, ajustarGbc(gbc, 9));
+        panelCard.add(txtConfirmaSenha, ajustarGbc(gbc, 9));
 
-        // Botão Finalizar Cadastro (Verde esmeralda com efeito hover)
+        // Botões
         btnCadastrar = criarBotaoEstilizado("Finalizar Cadastro", new Color(16, 185, 129), new Color(52, 211, 153));
         gbc.gridy = 10; gbc.insets = new Insets(20, 0, 8, 0);
-        panelMain.add(btnCadastrar, gbc);
+        panelCard.add(btnCadastrar, gbc);
 
-        // Botão Voltar (Estilo Outline/Transparente)
         btnVoltar = criarBotaoOutline("Voltar ao Login");
         gbc.gridy = 11; gbc.insets = new Insets(0, 0, 0, 0);
-        panelMain.add(btnVoltar, gbc);
+        panelCard.add(btnVoltar, gbc);
 
         btnCadastrar.addActionListener(e -> acaoSalvar());
         btnVoltar.addActionListener(e -> {
