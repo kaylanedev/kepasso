@@ -1,14 +1,8 @@
 package view;
 
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import controller.AuthController;
 
 public class TelaLogin extends JFrame {
@@ -22,82 +16,127 @@ public class TelaLogin extends JFrame {
     public TelaLogin() {
         controller = new AuthController();
 
-        // Configurações da Janela
-        setTitle("KeePasso - Login");
-        setSize(400, 300);
+        // Aplicar o visual nativo do SO
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ignored) {}
+
+        setTitle("KeePasso - Autenticação");
+        setSize(420, 480);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Centraliza a tela
-        setLayout(null); // Layout livre por coordenadas
+        setLocationRelativeTo(null);
+        setResizable(false);
 
-        // Título
-        JLabel lblTitulo = new JLabel("KeePasso");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
-        lblTitulo.setBounds(140, 20, 150, 30);
-        add(lblTitulo);
+        // Painel Principal
+        JPanel panelMain = new JPanel();
+        panelMain.setBackground(new Color(245, 247, 250));
+        panelMain.setLayout(new GridBagLayout());
+        panelMain.setBorder(new EmptyBorder(30, 40, 30, 40));
+        add(panelMain);
 
-        // Rótulo e Campo E-mail
-        JLabel lblEmail = new JLabel("E-mail:");
-        lblEmail.setBounds(50, 70, 80, 25);
-        add(lblEmail);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(8, 0, 8, 0);
 
+        // Título Principal
+        JLabel lblTitulo = new JLabel("KeePasso", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitulo.setForeground(new Color(33, 37, 41));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 5, 0);
+        panelMain.add(lblTitulo, gbc);
+
+        // Subtítulo
+        JLabel lblSubtitulo = new JLabel("Acesse sua conta para continuar", SwingConstants.CENTER);
+        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblSubtitulo.setForeground(new Color(108, 117, 125));
+        gbc.gridy = 1;
+        gbc.insets = new Insets(0, 0, 25, 0);
+        panelMain.add(lblSubtitulo, gbc);
+
+        // Rótulo E-mail
+        JLabel lblEmail = new JLabel("E-mail");
+        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblEmail.setForeground(new Color(73, 80, 87));
+        gbc.gridy = 2;
+        gbc.insets = new Insets(5, 0, 2, 0);
+        panelMain.add(lblEmail, gbc);
+
+        // Campo E-mail
         txtEmail = new JTextField();
-        txtEmail.setBounds(120, 70, 200, 25);
-        add(txtEmail);
+        txtEmail.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtEmail.setPreferredSize(new Dimension(0, 38));
+        gbc.gridy = 3;
+        panelMain.add(txtEmail, gbc);
 
-        // Rótulo e Campo Senha
-        JLabel lblSenha = new JLabel("Senha:");
-        lblSenha.setBounds(50, 110, 80, 25);
-        add(lblSenha);
+        // Rótulo Senha
+        JLabel lblSenha = new JLabel("Senha");
+        lblSenha.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblSenha.setForeground(new Color(73, 80, 87));
+        gbc.gridy = 4;
+        gbc.insets = new Insets(10, 0, 2, 0);
+        panelMain.add(lblSenha, gbc);
 
+        // Campo Senha
         txtSenha = new JPasswordField();
-        txtSenha.setBounds(120, 110, 200, 25);
-        add(txtSenha);
+        txtSenha.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtSenha.setPreferredSize(new Dimension(0, 38));
+        gbc.gridy = 5;
+        panelMain.add(txtSenha, gbc);
 
         // Botão Entrar
         btnEntrar = new JButton("Entrar");
-        btnEntrar.setBounds(120, 160, 90, 30);
-        add(btnEntrar);
+        btnEntrar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnEntrar.setBackground(new Color(13, 110, 253));
+        btnEntrar.setForeground(Color.WHITE);
+        btnEntrar.setFocusPainted(false);
+        btnEntrar.setOpaque(true);
+        btnEntrar.setContentAreaFilled(true);
+        btnEntrar.setBorderPainted(false);
+        btnEntrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnEntrar.setPreferredSize(new Dimension(0, 40));
+        gbc.gridy = 6;
+        gbc.insets = new Insets(25, 0, 8, 0);
+        panelMain.add(btnEntrar, gbc);
 
         // Botão Cadastrar
-        btnCadastrar = new JButton("Cadastrar");
-        btnCadastrar.setBounds(220, 160, 100, 30);
-        add(btnCadastrar);
+        btnCadastrar = new JButton("Criar nova conta");
+        btnCadastrar.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        btnCadastrar.setBackground(new Color(230, 235, 245));
+        btnCadastrar.setForeground(new Color(13, 110, 253));
+        btnCadastrar.setFocusPainted(false);
+        btnCadastrar.setOpaque(true);
+        btnCadastrar.setContentAreaFilled(true);
+        btnCadastrar.setBorderPainted(false);
+        btnCadastrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCadastrar.setPreferredSize(new Dimension(0, 36));
+        gbc.gridy = 7;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        panelMain.add(btnCadastrar, gbc);
 
         // Ações dos Botões
-        btnEntrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                açãoLogin();
-            }
-        });
-
-        btnCadastrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Abre a Tela de Cadastro e fecha a de Login
-                new TelaCadastro().setVisible(true);
-                dispose();
-            }
+        btnEntrar.addActionListener(e -> acaoLogin());
+        btnCadastrar.addActionListener(e -> {
+            new TelaCadastro().setVisible(true);
+            dispose();
         });
     }
 
-    private void açãoLogin() {
+    private void acaoLogin() {
         String email = txtEmail.getText();
         String senha = new String(txtSenha.getPassword());
-
         String resultado = controller.autenticarUsuario(email, senha);
 
         if (resultado.equals("OK")) {
-            JOptionPane.showMessageDialog(this, "Validado no Controller! (Aguardando DAO do Integrante 2)");
+            JOptionPane.showMessageDialog(this, "Validado no Controller! (Aguardando DAO do Integrante 2)", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, resultado, "Aviso", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    // Método main para testar a tela diretamente
     public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(() -> {
-            new TelaLogin().setVisible(true);
-        });
+        EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
     }
 }
