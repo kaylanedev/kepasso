@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import controller.AuthController;
 
 public class TelaLogin extends JFrame {
 
+	private static final long serialVersionUID = 1L;
     private JTextField txtEmail;
     private JPasswordField txtSenha;
     private JButton btnEntrar;
