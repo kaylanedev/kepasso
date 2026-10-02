@@ -5,282 +5,414 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
+import java.net.URI;
 import javax.swing.*;
-import controller.AuthController;
 
 public class TelaLogin extends JFrame {
 
-    private static final long serialVersionUID = 1L; // Corrige o aviso do Eclipse[cite: 3]
+    private static final long serialVersionUID = 1L;
 
-    private JTextField txtEmail;
+    private JTextField txtUsuario;
     private JPasswordField txtSenha;
-    private JButton btnEntrar;
-    private JButton btnCadastrar;
-    private AuthController controller;
+    private JButton btnLogin;
+    private JButton btnOlhoSenha;
+    private boolean senhaVisivel = false;
+
+    // Cores exatas da nova imagem (nova_2.png)
+    private final Color AZUL_NEON   = new Color(0, 136, 255); // Azul brilhante da chave
+    private final Color BG_DARK_IMG = new Color(13, 17, 23);   // Fundo escuro
+    private final Color BRANCO      = new Color(255, 255, 255);
+    
+    private final Color AZUL_BOTAO  = new Color(14, 126, 238);
+    private final Color BG_CARD     = new Color(15, 20, 28);
+    private final Color BG_CAMPO    = new Color(10, 14, 22);
+    private final Color CINZA_TEXTO = new Color(160, 175, 200);
 
     public TelaLogin() {
-        controller = new AuthController();
-
-        setTitle("KeePasso - Autenticação");
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setTitle("KeyPasso - Autenticação");
+        setSize(850, 520);
+        setMinimumSize(new Dimension(800, 480));
+        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Fundo Gradiente Fluido (Roxo Profundo -> Azul Noite)
+        // Fundo Escuro com Gradiente Sutil
         JPanel panelBackground = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(20, 21, 34), getWidth(), getHeight(), new Color(10, 11, 20));
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                GradientPaint gp = new GradientPaint(
+                    0, 0, new Color(10, 14, 24),
+                    getWidth(), getHeight(), new Color(4, 6, 12)
+                );
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+
+                RadialGradientPaint rgb = new RadialGradientPaint(
+                    new Point(120, 100),
+                    450f,
+                    new float[]{0.0f, 1.0f},
+                    new Color[]{new Color(0, 136, 255, 20), new Color(0, 0, 0, 0)}
+                );
+                g2.setPaint(rgb);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+
+                g2.dispose();
             }
         };
         panelBackground.setLayout(new GridBagLayout());
         add(panelBackground);
 
-        // Card Central Flutuante com Sombra e Efeito Vidro Translúcido
+        // Cartão Principal Glassmorphism
         JPanel panelCard = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                // 1. Desenha a Sombra Suave
-                g2.setColor(new Color(0, 0, 0, 80));
-                g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 24, 24);
-                
-                // 2. Desenha o Fundo Translúcido (Glassmorphism)
-                g2.setColor(new Color(32, 35, 52, 220));
-                g2.fillRoundRect(0, 0, getWidth() - 8, getHeight() - 8, 24, 24);
-                
-                // 3. Borda sutil brilhante no topo do card
-                g2.setColor(new Color(255, 255, 255, 30));
-                g2.drawRoundRect(0, 0, getWidth() - 8, getHeight() - 8, 24, 24);
+
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+
+                int larguraCurva = (int) (getWidth() * 0.42);
+                GradientPaint gpCurva = new GradientPaint(
+                    0, 0, new Color(12, 18, 30),
+                    larguraCurva, getHeight(), new Color(8, 12, 22)
+                );
+                g2.setPaint(gpCurva);
+
+                g2.fillRoundRect(0, 0, larguraCurva + 40, getHeight(), 24, 24);
+                g2.setColor(BG_CARD);
+                g2.fillArc(larguraCurva - 20, -50, 100, getHeight() + 100, 270, 180);
+
+                g2.setPaint(gpCurva);
+                g2.fillArc(larguraCurva - 50, -20, 100, getHeight() + 40, 90, -180);
+
+                g2.setColor(new Color(255, 255, 255, 12));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
+
                 g2.dispose();
             }
         };
         panelCard.setOpaque(false);
-        panelCard.setLayout(new GridBagLayout());
-        panelCard.setPreferredSize(new Dimension(410, 520));
+        panelCard.setLayout(new GridLayout(1, 2));
+        panelCard.setPreferredSize(new Dimension(760, 420));
         panelBackground.add(panelCard);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(6, 0, 6, 0);
-        
-     // Ícone Vetorial Moderno em Prata / Azul Neon
-        JPanel lblLogo = new JPanel() {
-            private static final long serialVersionUID = 1L; // Evita o aviso do Eclipse[cite: 3]
+        // ==========================================
+        // PAINEL ESQUERDO: LOGO DA CHAVE 
+        // ==========================================
+        JPanel panelEsquerda = new JPanel(new GridBagLayout());
+        panelEsquerda.setOpaque(false);
 
+        GridBagConstraints gbcEsq = new GridBagConstraints();
+        gbcEsq.gridx = 0;
+        gbcEsq.anchor = GridBagConstraints.CENTER;
+
+        // DESENHO DA CHAVE 
+        JPanel panelLogo = new JPanel() {
+            private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                int cx = getWidth() / 2;
-                int cy = getHeight() / 2 + 2;
+                int cx = getWidth() / 2 - 12;
+                int cy = getHeight() / 2;
 
-                // Gradiente Prateado / Neon Moderno (Branco -> Azul Claro)
-                GradientPaint prata = new GradientPaint(cx - 15, cy - 15, new Color(255, 255, 255), cx + 15, cy + 15, new Color(129, 140, 248));
-                g2.setPaint(prata);
+                // 1. Anel Circular Azul Neon Externo (Stroke)
+                g2.setColor(AZUL_NEON);
+                g2.setStroke(new BasicStroke(5.0f));
+                g2.drawOval(cx - 45, cy - 45, 90, 90);
 
-                // 1. Arco Superior do Cadeado
-                g2.setStroke(new BasicStroke(3.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                g2.drawArc(cx - 10, cy - 18, 20, 20, 0, 180);
+                // 2. Haste e Dente da Chave (Azul Neon)
+                g2.fillRect(cx - 5, cy -8, 95, 15);     // Haste principal
+                g2.fillRect(cx +56, cy + 7, 9, 18);    // Dente inferior
+                g2.fillRect(cx + 82, cy -12, 9, 30);   // Bloco final da ponta (formato T)
 
-                // 2. Corpo do Cadeado (Outline Moderno e Limpo)
-                g2.setStroke(new BasicStroke(2.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                g2.drawRoundRect(cx - 15, cy - 5, 30, 24, 10, 10);
+                // 3. Disco Central Branco (Sólido)
+                g2.setColor(BRANCO);
+                g2.fillOval(cx - 22, cy - 22, 44, 44);
 
-                // 3. Ponto Central / Fechadura Neon
-                g2.setColor(new Color(129, 140, 248));
-                g2.fillOval(cx - 3, cy + 4, 6, 6);
+                // 4. Furo Centro Escuro
+                g2.setColor(BG_DARK_IMG);
+                g2.fillOval(cx - 9, cy - 9, 18, 18);
 
                 g2.dispose();
             }
         };
-        lblLogo.setOpaque(false);
-        lblLogo.setPreferredSize(new Dimension(80, 60));
+        panelLogo.setOpaque(false);
+        panelLogo.setPreferredSize(new Dimension(180, 130));
+        gbcEsq.gridy = 0;
+        gbcEsq.insets = new Insets(0, 0, 5, 0);
+        panelEsquerda.add(panelLogo, gbcEsq);
 
-        gbc.gridx = 0; 
-        gbc.gridy = 0; 
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(25, 0, 5, 0); // Mantém o espaçamento para não cortar no topo
-        panelCard.add(lblLogo, gbc);
+        // Texto "KeyPasso"
+        JLabel lblTextoLogo = new JLabel("KeyPasso");
+        lblTextoLogo.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTextoLogo.setForeground(BRANCO);
+        gbcEsq.gridy = 1;
+        gbcEsq.insets = new Insets(0, 0, 0, 0);
+        panelEsquerda.add(lblTextoLogo, gbcEsq);
 
-        // Título Estilizado
-        JLabel lblTitulo = new JLabel("KeePasso", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        lblTitulo.setForeground(Color.WHITE);
-        gbc.gridy = 1;
-        panelCard.add(lblTitulo, gbc);
+        panelCard.add(panelEsquerda);
 
-        // Subtítulo
-        JLabel lblSubtitulo = new JLabel("Acesse seu cofre de senhas", SwingConstants.CENTER);
-        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        lblSubtitulo.setForeground(new Color(148, 163, 184));
-        gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        panelCard.add(lblSubtitulo, gbc);
+        // ==========================================
+        // PAINEL DIREITO: FORMULÁRIO DE LOGIN
+        // ==========================================
+        JPanel panelDireita = new JPanel(new GridBagLayout());
+        panelDireita.setOpaque(false);
 
-        // Rótulo E-mail
-        JLabel lblEmail = new JLabel("E-MAIL");
-        lblEmail.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblEmail.setForeground(new Color(148, 163, 184));
-        gbc.gridy = 3;
-        gbc.insets = new Insets(4, 0, 2, 0);
-        panelCard.add(lblEmail, gbc);
+        GridBagConstraints gbcDir = new GridBagConstraints();
+        gbcDir.fill = GridBagConstraints.HORIZONTAL;
+        gbcDir.gridx = 0;
+        gbcDir.insets = new Insets(6, 35, 6, 35);
 
-        // Campo E-mail com Borda Dinâmica (Glow)
-        txtEmail = criarCampoTextoComIcone("✉");
-        gbc.gridy = 4;
-        panelCard.add(txtEmail, gbc);
+        // Título "Entrar"
+        JLabel lblEntrar = new JLabel("Entrar", SwingConstants.CENTER);
+        lblEntrar.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblEntrar.setForeground(BRANCO);
+        gbcDir.gridy = 0;
+        gbcDir.insets = new Insets(15, 35, 20, 35);
+        panelDireita.add(lblEntrar, gbcDir);
 
-        // Rótulo Senha
-        JLabel lblSenha = new JLabel("SENHA");
-        lblSenha.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        lblSenha.setForeground(new Color(148, 163, 184));
-        gbc.gridy = 5;
-        gbc.insets = new Insets(10, 0, 2, 0);
-        panelCard.add(lblSenha, gbc);
+        // Campo Usuário
+        txtUsuario = criarCampoTexto("Usuário");
+        gbcDir.gridy = 1;
+        gbcDir.insets = new Insets(5, 35, 10, 35);
+        panelDireita.add(txtUsuario, gbcDir);
 
-        // Campo Senha com Borda Dinâmica (Glow)
-        txtSenha = criarCampoSenhaComIcone("🔒");
-        gbc.gridy = 6;
-        panelCard.add(txtSenha, gbc);
+        // Campo Senha com Olho
+        JPanel panelSenhaContainer = new JPanel(new BorderLayout());
+        panelSenhaContainer.setOpaque(false);
 
-        // Botão Entrar com Gradiente Vibrante
-        btnEntrar = criarBotaoGradiente("ENTRAR", new Color(99, 102, 241), new Color(139, 92, 246));
-        gbc.gridy = 7;
-        gbc.insets = new Insets(22, 0, 12, 0);
-        panelCard.add(btnEntrar, gbc);
+        txtSenha = criarCampoSenha();
+        btnOlhoSenha = criarBotaoOlho();
 
-        // Divisor Visual com Texto
-        JPanel panelDivisor = criarDivisor();
-        gbc.gridy = 8;
-        gbc.insets = new Insets(5, 0, 10, 0);
-        panelCard.add(panelDivisor, gbc);
+        panelSenhaContainer.add(txtSenha, BorderLayout.CENTER);
+        panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
 
-        // Botão Criar Conta (Outline Moderno)
-        btnCadastrar = criarBotaoOutline("Criar nova conta");
-        gbc.gridy = 9;
-        gbc.insets = new Insets(0, 0, 0, 0);
-        panelCard.add(btnCadastrar, gbc);
+        gbcDir.gridy = 2;
+        gbcDir.insets = new Insets(5, 35, 4, 35);
+        panelDireita.add(panelSenhaContainer, gbcDir);
 
-        // Eventos
-        btnEntrar.addActionListener(e -> acaoLogin());
-        btnCadastrar.addActionListener(e -> {
-            new TelaCadastro().setVisible(true);
-            dispose();
-        });
+     // Esqueceu a Senha (CENTRALIZADO E ABAIXO DO BOTÃO ENTRAR)
+        JLabel lblEsqueceu = new JLabel("Esqueceu a senha?", SwingConstants.CENTER);
+        lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblEsqueceu.setForeground(CINZA_TEXTO);
+        lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        gbcDir.gridy = 5;
+        gbcDir.insets = new Insets(0, 35, 20, 35); // Margens equilibradas
+        panelDireita.add(lblEsqueceu, gbcDir);
+
+     // Botão Entrar
+        btnLogin = criarBotaoEspelhado("Entrar");
+        gbcDir.gridy = 4;
+        gbcDir.insets = new Insets(5, 35, 12, 35);
+        panelDireita.add(btnLogin, gbcDir);
+
+     
+
+        // Botões Redes Sociais
+        JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
+        panelRedes.setOpaque(false);
+
+        panelRedes.add(criarBotaoSocial("Google", "https://google.com"));
+        panelRedes.add(criarBotaoSocial("Instagram", "https://instagram.com"));
+        panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
+
+        gbcDir.gridy = 6;
+        gbcDir.insets = new Insets(0, 35, 30, 35);
+        panelDireita.add(panelRedes, gbcDir);
+
+        panelCard.add(panelDireita);
     }
 
-    // Criador de Campo de Texto com Borda de Foco Ativo (Glow Effect)
-    private JTextField criarCampoTextoComIcone(String icone) {
-        JTextField field = new JTextField();
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setBackground(new Color(21, 23, 35));
-        field.setForeground(Color.WHITE);
-        field.setCaretColor(new Color(129, 140, 248));
-        field.setPreferredSize(new Dimension(0, 40));
-        
-        Color bordaPadrao = new Color(51, 65, 85);
-        Color bordaFoco = new Color(129, 140, 248);
+    private JTextField criarCampoTexto(String placeholder) {
+        JTextField field = new JTextField(placeholder);
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setBackground(BG_CAMPO);
+        field.setForeground(CINZA_TEXTO);
+        field.setCaretColor(AZUL_NEON);
+        field.setPreferredSize(new Dimension(0, 38));
+
+        Color bordaPadrao = new Color(35, 48, 70);
 
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(bordaPadrao, 1, true),
-            BorderFactory.createEmptyBorder(6, 12, 6, 12)
+            BorderFactory.createEmptyBorder(5, 12, 5, 12)
         ));
 
-        // Evento que muda a cor da borda ao focar no campo
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
+                if (field.getText().equals(placeholder)) {
+                    field.setText("");
+                    field.setForeground(BRANCO);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(bordaFoco, 2, true),
-                    BorderFactory.createEmptyBorder(5, 11, 5, 11)
+                    BorderFactory.createLineBorder(AZUL_NEON, 1, true),
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
             @Override
             public void focusLost(FocusEvent e) {
+                if (field.getText().isEmpty()) {
+                    field.setText(placeholder);
+                    field.setForeground(CINZA_TEXTO);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(bordaPadrao, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
         });
         return field;
     }
 
-    // Criador de Campo de Senha com Borda de Foco Ativo
-    private JPasswordField criarCampoSenhaComIcone(String icone) {
-        JPasswordField field = new JPasswordField();
-        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        field.setBackground(new Color(21, 23, 35));
-        field.setForeground(Color.WHITE);
-        field.setCaretColor(new Color(129, 140, 248));
-        field.setPreferredSize(new Dimension(0, 40));
+    private JPasswordField criarCampoSenha() {
+        JPasswordField field = new JPasswordField("Senha");
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        field.setBackground(BG_CAMPO);
+        field.setForeground(CINZA_TEXTO);
+        field.setCaretColor(AZUL_NEON);
+        field.setEchoChar((char) 0);
+        field.setPreferredSize(new Dimension(0, 38));
 
-        Color bordaPadrao = new Color(51, 65, 85);
-        Color bordaFoco = new Color(129, 140, 248);
+        Color bordaPadrao = new Color(35, 48, 70);
 
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(bordaPadrao, 1, true),
-            BorderFactory.createEmptyBorder(6, 12, 6, 12)
+            BorderFactory.createEmptyBorder(5, 12, 5, 12)
         ));
 
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
+                String senhaStr = new String(field.getPassword());
+                if (senhaStr.equals("Senha")) {
+                    field.setText("");
+                    field.setForeground(BRANCO);
+                    if (!senhaVisivel) field.setEchoChar('•');
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(bordaFoco, 2, true),
-                    BorderFactory.createEmptyBorder(5, 11, 5, 11)
+                    BorderFactory.createLineBorder(AZUL_NEON, 1, true),
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
             @Override
             public void focusLost(FocusEvent e) {
+                String senhaStr = new String(field.getPassword());
+                if (senhaStr.isEmpty()) {
+                    field.setText("Senha");
+                    field.setForeground(CINZA_TEXTO);
+                    field.setEchoChar((char) 0);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(bordaPadrao, 1, true),
-                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
         });
         return field;
     }
 
-    // Botão Principal com Gradiente Interno e Animação de Hover
-    private JButton criarBotaoGradiente(String texto, Color corInicio, Color corFim) {
+    private JButton criarBotaoOlho() {
+        JButton btn = new JButton() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                g2.setColor(getModel().isRollover() ? AZUL_NEON : CINZA_TEXTO);
+                g2.setStroke(new BasicStroke(1.8f));
+
+                int w = getWidth();
+                int h = getHeight();
+
+                g2.drawArc(w / 2 - 9, h / 2 - 6, 18, 12, 0, 180);
+                g2.drawArc(w / 2 - 9, h / 2 - 6, 18, 12, 0, -180);
+                g2.fillOval(w / 2 - 3, h / 2 - 3, 6, 6);
+
+                if (!senhaVisivel) {
+                    g2.setStroke(new BasicStroke(2f));
+                    g2.drawLine(w / 2 - 8, h / 2 + 7, w / 2 + 8, h / 2 - 7);
+                }
+
+                g2.dispose();
+            }
+        };
+
+        btn.setPreferredSize(new Dimension(38, 38));
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        btn.addActionListener(e -> {
+            senhaVisivel = !senhaVisivel;
+            String senhaStr = new String(txtSenha.getPassword());
+            if (!senhaStr.equals("Senha")) {
+                txtSenha.setEchoChar(senhaVisivel ? (char) 0 : '•');
+            }
+            btn.repaint();
+        });
+
+        return btn;
+    }
+
+    private JButton criarBotaoEspelhado(String texto) {
         JButton btn = new JButton(texto) {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                GradientPaint gp = getModel().isRollover() 
-                    ? new GradientPaint(0, 0, corInicio.brighter(), getWidth(), 0, corFim.brighter())
-                    : new GradientPaint(0, 0, corInicio, getWidth(), 0, corFim);
-                
+
+                int w = getWidth();
+                int h = getHeight();
+
+                boolean hover = getModel().isRollover();
+
+                Color cor1 = hover ? new Color(0, 160, 255) : AZUL_BOTAO;
+                Color cor2 = hover ? new Color(0, 100, 220) : new Color(10, 80, 180);
+
+                GradientPaint gp = new GradientPaint(0, 0, cor1, 0, h, cor2);
                 g2.setPaint(gp);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                
-                g2.setColor(Color.WHITE);
+                g2.fill(new RoundRectangle2D.Float(0, 0, w, h, 14, 14));
+
+                GradientPaint gpReflexo = new GradientPaint(
+                    0, 0, new Color(255, 255, 255, 110),
+                    0, h / 2, new Color(255, 255, 255, 15)
+                );
+                g2.setPaint(gpReflexo);
+                g2.fill(new RoundRectangle2D.Float(1, 1, w - 2, h / 2 - 1, 12, 12));
+
+                g2.setColor(new Color(255, 255, 255, hover ? 160 : 90));
+                g2.setStroke(new BasicStroke(1.2f));
+                g2.draw(new RoundRectangle2D.Float(1, 1, w - 2, h - 2, 14, 14));
+
                 g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                g2.drawString(getText(), x, y);
+                int xText = (w - fm.stringWidth(getText())) / 2;
+                int yText = (h + fm.getAscent() - fm.getDescent()) / 2;
+
+                g2.setColor(BRANCO);
+                g2.drawString(getText(), xText, yText);
+
                 g2.dispose();
             }
         };
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setPreferredSize(new Dimension(0, 42)); // Altura padrão de 42px
+
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setPreferredSize(new Dimension(0, 42));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -288,11 +420,55 @@ public class TelaLogin extends JFrame {
         return btn;
     }
 
-    // Botão de Cadastrar estilo Texto Link
-    private JButton criarBotaoOutline(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setForeground(new Color(129, 140, 248));
+    private JButton criarBotaoSocial(String rede, String url) {
+        JButton btn = new JButton() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                boolean hover = getModel().isRollover();
+
+                g2.setColor(hover ? AZUL_NEON : BG_CAMPO);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+
+                g2.setColor(hover ? AZUL_NEON : new Color(40, 55, 80));
+                g2.setStroke(new BasicStroke(1f));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 10, 10);
+
+                g2.setColor(hover ? BG_DARK_IMG : BRANCO);
+                g2.setFont(new Font("Segoe UI", Font.BOLD, 14));
+                FontMetrics fm = g2.getFontMetrics();
+
+                int cx = getWidth() / 2;
+                int cy = getHeight() / 2;
+
+                switch (rede) {
+                    case "Google":
+                        g2.drawString("G", cx - fm.stringWidth("G") / 2, cy + 5);
+                        break;
+                    case "Facebook":
+                        g2.drawString("f", cx - fm.stringWidth("f") / 2, cy + 5);
+                        break;
+                    case "Instagram":
+                        g2.setStroke(new BasicStroke(1.6f));
+                        g2.drawRoundRect(cx - 7, cy - 7, 14, 14, 4, 4);
+                        g2.drawOval(cx - 3, cy - 3, 6, 6);
+                        g2.fillOval(cx + 3, cy - 5, 2, 2);
+                        break;
+                    case "GitHub":
+                        g2.setFont(new Font("Segoe UI", Font.BOLD, 11));
+                        fm = g2.getFontMetrics();
+                        g2.drawString("GH", cx - fm.stringWidth("GH") / 2, cy + 4);
+                        break;
+                }
+
+                g2.dispose();
+            }
+        };
+
+        btn.setPreferredSize(new Dimension(38, 38));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -300,59 +476,21 @@ public class TelaLogin extends JFrame {
 
         btn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setForeground(Color.WHITE);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setForeground(new Color(129, 140, 248));
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
+
         return btn;
     }
 
-    // Linha Divisória "OU"
-    private JPanel criarDivisor() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setOpaque(false);
-
-        JSeparator sep1 = new JSeparator();
-        sep1.setForeground(new Color(51, 65, 85));
-        sep1.setBackground(new Color(51, 65, 85));
-
-        JSeparator sep2 = new JSeparator();
-        sep2.setForeground(new Color(51, 65, 85));
-        sep2.setBackground(new Color(51, 65, 85));
-
-        JLabel lblOu = new JLabel("  OU  ");
-        lblOu.setFont(new Font("Segoe UI", Font.BOLD, 10));
-        lblOu.setForeground(new Color(100, 116, 139));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        panel.add(sep1, gbc);
-        gbc.weightx = 0.0;
-        panel.add(lblOu, gbc);
-        gbc.weightx = 1.0;
-        panel.add(sep2, gbc);
-
-        return panel;
-    }
-
-    private void acaoLogin() {
-        String email = txtEmail.getText();
-        String senha = new String(txtSenha.getPassword());
-        String resultado = controller.autenticarUsuario(email, senha);
-
-        if (resultado.equals("OK")) {
-            JOptionPane.showMessageDialog(this, "Validado no Controller!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, resultado, "Aviso", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            new TelaLogin().setVisible(true);
+        });
     }
 }
