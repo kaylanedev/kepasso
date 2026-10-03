@@ -68,7 +68,7 @@ public class TelaLogin extends JFrame {
         panelBackground.setLayout(new GridBagLayout());
         add(panelBackground);
 
-        // Cartão Principal Glassmorphism
+     // Cartão Principal Glassmorphism com Linha Divisória Discreta
         JPanel panelCard = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -76,23 +76,22 @@ public class TelaLogin extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+                // 1. Fundo do Cartão Principal
                 g2.setColor(BG_CARD);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
 
-                int larguraCurva = (int) (getWidth() * 0.42);
-                GradientPaint gpCurva = new GradientPaint(
-                    0, 0, new Color(12, 18, 30),
-                    larguraCurva, getHeight(), new Color(8, 12, 22)
-                );
-                g2.setPaint(gpCurva);
+                // 2. Linha Divisória Reta e Discreta (Cinza/Semitransparente)
+                int xLinha = (int) (getWidth() * 0.45); // Posição horizontal (35% da largura)
+                int margemVertical = 40;                 // Espaço em cima e em baixo para não ir de ponta a ponta
 
-                g2.fillRoundRect(0, 0, larguraCurva + 40, getHeight(), 24, 24);
-                g2.setColor(BG_CARD);
-                g2.fillArc(larguraCurva - 20, -50, 100, getHeight() + 100, 270, 180);
+                // Cor cinza suave e sutil (com transparência/alpha de 40)
+                g2.setColor(new Color(255, 255, 255, 40)); 
+                g2.setStroke(new BasicStroke(1.2f));       // Espessura da linha
+                
+                // Desenha a linha vertical
+                g2.drawLine(xLinha, margemVertical, xLinha, getHeight() - margemVertical);
 
-                g2.setPaint(gpCurva);
-                g2.fillArc(larguraCurva - 50, -20, 100, getHeight() + 40, 90, -180);
-
+                // 3. Borda sutil ao redor de todo o cartão
                 g2.setColor(new Color(255, 255, 255, 12));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
 
@@ -123,43 +122,76 @@ public class TelaLogin extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                int cx = getWidth() / 2 - 12;
+                int cx = getWidth() / 2 - 25;
                 int cy = getHeight() / 2;
 
-                // 1. Anel Circular Azul Neon Externo (Stroke)
-                g2.setColor(AZUL_NEON);
-                g2.setStroke(new BasicStroke(5.0f));
-                g2.drawOval(cx - 45, cy - 45, 90, 90);
+             // Cor Azul Escuro para a haste e o anel externo
+                Color AZUL_ESCURO = new Color(12, 38, 75);
 
-                // 2. Haste e Dente da Chave (Azul Neon)
-                g2.fillRect(cx - 5, cy -8, 95, 15);     // Haste principal
-                g2.fillRect(cx +56, cy + 7, 9, 18);    // Dente inferior
-                g2.fillRect(cx + 82, cy -12, 9, 30);   // Bloco final da ponta (formato T)
+                // 1. Anel Circular Externo (AZUL ESCURO)
+                g2.setColor(AZUL_ESCURO);
+                g2.setStroke(new BasicStroke(7.0f)); 
+                g2.drawArc(cx - 45, cy - 45, 90, 91, 28, 360);
+                
+             // 2. Haste Principal da Chave (AZUL ESCURO)
+                g2.fillRect(cx - 5, cy - 8, 91, 12);
 
-                // 3. Disco Central Branco (Sólido)
-                g2.setColor(BRANCO);
+             // --- Substitua o segredo anterior por este código ---
+
+             // 3. O Segredo em formato "U" (Linha grossa e contínua com cantos arredondados)
+                int xInicioU = cx + 56; // Início do U na haste
+                int yTopU = cy + 4;     // Topo do U (onde encosta na haste principal)
+                int larguraU = 19;     // Largura total do "U"
+                int alturaU = 14;      // Altura/profundidade do "U"
+
+             // >>> COR Trocada para Azul Neon <<<
+                g2.setColor(AZUL_NEON); 
+                g2.setStroke(new BasicStroke(7.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+                int[] xPoints = {xInicioU, xInicioU, xInicioU + larguraU, xInicioU + larguraU};
+                int[] yPoints = {yTopU, yTopU + alturaU, yTopU + alturaU, yTopU};
+
+                g2.drawPolyline(xPoints, yPoints, 4);
+
+                // RESTAURA O STROKE PADRÃO
+                g2.setStroke(new BasicStroke(1.0f));
+
+                // 4. Disco Central (AGORA EM AMARELO NEON)
+                g2.setColor(new Color(255, 230, 0)); // Amarelo vibrante/neon
                 g2.fillOval(cx - 22, cy - 22, 44, 44);
 
-                // 4. Furo Centro Escuro
+                // 5. Furo Centro Escuro
                 g2.setColor(BG_DARK_IMG);
                 g2.fillOval(cx - 9, cy - 9, 18, 18);
 
                 g2.dispose();
             }
         };
+
         panelLogo.setOpaque(false);
-        panelLogo.setPreferredSize(new Dimension(180, 130));
+        panelLogo.setPreferredSize(new Dimension(220, 130));
+
         gbcEsq.gridy = 0;
         gbcEsq.insets = new Insets(0, 0, 5, 0);
         panelEsquerda.add(panelLogo, gbcEsq);
+        
 
         // Texto "KeyPasso"
-        JLabel lblTextoLogo = new JLabel("KeyPasso");
-        lblTextoLogo.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        lblTextoLogo.setForeground(BRANCO);
+     // Texto "KeyPasso" Bicolor (Mantém a estrutura original intacta)
+        JLabel lblTextoLogo = new JLabel("<html><span style='color: #FFFFFF;'>Key</span><span style='color: #0C264B;'>"
+        		+ "<b>Passo</b></span><span style='color: #FFE600;'>"
+        		+ "<b>*</b></span></html>");
+        lblTextoLogo.setFont(new Font("Segoe UI", Font.PLAIN, 28));
+
         gbcEsq.gridy = 1;
-        gbcEsq.insets = new Insets(0, 0, 0, 0);
+        gbcEsq.anchor = GridBagConstraints.WEST;
+        gbcEsq.insets = new Insets(0, 30, 0, 0); // Mantém a margem que deu certo para mover à esquerda
+
         panelEsquerda.add(lblTextoLogo, gbcEsq);
+        gbcEsq.anchor = GridBagConstraints.CENTER;
+        
+        // Reseta o anchor para CENTER para não afetar os próximos componentes
+        gbcEsq.anchor = GridBagConstraints.CENTER;
 
         panelCard.add(panelEsquerda);
 
@@ -179,13 +211,13 @@ public class TelaLogin extends JFrame {
         lblEntrar.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblEntrar.setForeground(BRANCO);
         gbcDir.gridy = 0;
-        gbcDir.insets = new Insets(15, 35, 20, 35);
+        gbcDir.insets = new Insets(30, 10, 20, 60);
         panelDireita.add(lblEntrar, gbcDir);
 
         // Campo Usuário
         txtUsuario = criarCampoTexto("Usuário");
         gbcDir.gridy = 1;
-        gbcDir.insets = new Insets(5, 35, 10, 35);
+        gbcDir.insets = new Insets(5, -50, 10, -20);
         panelDireita.add(txtUsuario, gbcDir);
 
         // Campo Senha com Olho
@@ -199,7 +231,7 @@ public class TelaLogin extends JFrame {
         panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
 
         gbcDir.gridy = 2;
-        gbcDir.insets = new Insets(5, 35, 4, 35);
+        gbcDir.insets = new Insets(5, -50, 4, -35);
         panelDireita.add(panelSenhaContainer, gbcDir);
 
      // Esqueceu a Senha (CENTRALIZADO E ABAIXO DO BOTÃO ENTRAR)
@@ -208,13 +240,13 @@ public class TelaLogin extends JFrame {
         lblEsqueceu.setForeground(CINZA_TEXTO);
         lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
         gbcDir.gridy = 5;
-        gbcDir.insets = new Insets(0, 35, 20, 35); // Margens equilibradas
+        gbcDir.insets = new Insets(5, -15, 25, 40); // Margens equilibradas
         panelDireita.add(lblEsqueceu, gbcDir);
 
      // Botão Entrar
         btnLogin = criarBotaoEspelhado("Entrar");
         gbcDir.gridy = 4;
-        gbcDir.insets = new Insets(5, 35, 12, 35);
+        gbcDir.insets = new Insets(15, -15, 20, 40);
         panelDireita.add(btnLogin, gbcDir);
 
      
@@ -228,7 +260,7 @@ public class TelaLogin extends JFrame {
         panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
 
         gbcDir.gridy = 6;
-        gbcDir.insets = new Insets(0, 35, 30, 35);
+        gbcDir.insets = new Insets(-10, -15, 30, 35);
         panelDireita.add(panelRedes, gbcDir);
 
         panelCard.add(panelDireita);
