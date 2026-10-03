@@ -113,7 +113,7 @@ public class TelaLogin extends JFrame {
         gbcEsq.gridx = 0;
         gbcEsq.anchor = GridBagConstraints.CENTER;
 
-        // DESENHO DA CHAVE 
+     // DESENHO DA CHAVE 
         JPanel panelLogo = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -125,7 +125,7 @@ public class TelaLogin extends JFrame {
                 int cx = getWidth() / 2 - 25;
                 int cy = getHeight() / 2;
 
-             // Cor Azul Escuro para a haste e o anel externo
+                // Cor Azul Escuro para a haste e o anel externo
                 Color AZUL_ESCURO = new Color(12, 38, 75);
 
                 // 1. Anel Circular Externo (AZUL ESCURO)
@@ -133,18 +133,19 @@ public class TelaLogin extends JFrame {
                 g2.setStroke(new BasicStroke(7.0f)); 
                 g2.drawArc(cx - 45, cy - 45, 90, 91, 28, 360);
                 
-             // 2. Haste Principal da Chave (AZUL ESCURO)
-                g2.fillRect(cx - 5, cy - 8, 91, 12);
+                // 2. Haste Principal da Chave (AZUL ESCURO com ponta direita arredondada)
+                // Recuamos para 'cx - 15' (dentro do disco) e esticamos a largura para 101.
+                // Os cantos (12, 12) arredondam a ponta direita visível.
+                g2.setColor(AZUL_ESCURO);
+                g2.fillRoundRect(cx - 15, cy - 8, 108, 12, 12, 12);
 
-             // --- Substitua o segredo anterior por este código ---
-
-             // 3. O Segredo em formato "U" (Linha grossa e contínua com cantos arredondados)
+                // 3. O Segredo em formato "U"
                 int xInicioU = cx + 56; // Início do U na haste
                 int yTopU = cy + 4;     // Topo do U (onde encosta na haste principal)
                 int larguraU = 19;     // Largura total do "U"
                 int alturaU = 14;      // Altura/profundidade do "U"
 
-             // >>> COR Trocada para Azul Neon <<<
+                // >>> COR Trocada para Azul Neon <<<
                 g2.setColor(AZUL_NEON); 
                 g2.setStroke(new BasicStroke(7.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
@@ -156,7 +157,7 @@ public class TelaLogin extends JFrame {
                 // RESTAURA O STROKE PADRÃO
                 g2.setStroke(new BasicStroke(1.0f));
 
-                // 4. Disco Central (AGORA EM AMARELO NEON)
+                // 4. Disco Central (AMARELO NEON) - Desenhado por cima para esconder a base da haste
                 g2.setColor(new Color(255, 230, 0)); // Amarelo vibrante/neon
                 g2.fillOval(cx - 22, cy - 22, 44, 44);
 
@@ -174,7 +175,6 @@ public class TelaLogin extends JFrame {
         gbcEsq.gridy = 0;
         gbcEsq.insets = new Insets(0, 0, 5, 0);
         panelEsquerda.add(panelLogo, gbcEsq);
-        
 
         // Texto "KeyPasso"
      // Texto "KeyPasso" Bicolor (Mantém a estrutura original intacta)
@@ -206,64 +206,99 @@ public class TelaLogin extends JFrame {
         gbcDir.gridx = 0;
         gbcDir.insets = new Insets(6, 35, 6, 35);
 
-        // Título "Entrar"
-        JLabel lblEntrar = new JLabel("Entrar", SwingConstants.CENTER);
-        lblEntrar.setFont(new Font("Segoe UI", Font.BOLD, 26));
-        lblEntrar.setForeground(BRANCO);
+     // Cabeçalho com Indicador de Foco Lateral (Glow Bar)
+        JPanel panelCabecalhoForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)) {
+            private static final long serialVersionUID = 1L;
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Barra Indicadora Neon à esquerda (Espessura 4px, altura proporcional ao bloco)
+                g2.setColor(AZUL_NEON);
+                g2.fillRoundRect(0, 4, 4, getHeight() - 8, 4, 4);
+
+                g2.dispose();
+            }
+        };
+        panelCabecalhoForm.setOpaque(false);
+        panelCabecalhoForm.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 0)); // Afasta o texto da barra
+
+        JPanel panelTextoCabecalho = new JPanel();
+        panelTextoCabecalho.setLayout(new BoxLayout(panelTextoCabecalho, BoxLayout.Y_AXIS));
+        panelTextoCabecalho.setOpaque(false);
+
+        // Título "ENTRAR" em caixa alta com letter-spacing
+        JLabel lblEntrar = new JLabel("<html><span style='letter-spacing: 1.5px; color: #FFFFFF;'>ENTRAR</span><span style='color: #00D4FF;'>*</span></html>");
+        lblEntrar.setFont(new Font("Segoe UI", Font.BOLD, 24));
+
+        JLabel lblSubtitulo = new JLabel("Acesse sua conta para continuar");
+        lblSubtitulo.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblSubtitulo.setForeground(new Color(130, 150, 175));
+
+        panelTextoCabecalho.add(lblEntrar);
+        panelTextoCabecalho.add(Box.createVerticalStrut(2));
+        panelTextoCabecalho.add(lblSubtitulo);
+
+        panelCabecalhoForm.add(panelTextoCabecalho);
+
         gbcDir.gridy = 0;
-        gbcDir.insets = new Insets(30, 10, 20, 60);
-        panelDireita.add(lblEntrar, gbcDir);
+        gbcDir.anchor = GridBagConstraints.WEST;
+        gbcDir.insets = new Insets(20, -50, 18, -20);
+        panelDireita.add(panelCabecalhoForm, gbcDir);
 
-        // Campo Usuário
-        txtUsuario = criarCampoTexto("Usuário");
-        gbcDir.gridy = 1;
-        gbcDir.insets = new Insets(5, -50, 10, -20);
-        panelDireita.add(txtUsuario, gbcDir);
+     // Recompoe o alinhamento para os próximos componentes
+     gbcDir.anchor = GridBagConstraints.CENTER;
 
-        // Campo Senha com Olho
-        JPanel panelSenhaContainer = new JPanel(new BorderLayout());
-        panelSenhaContainer.setOpaque(false);
+     // Campo Usuário
+     txtUsuario = criarCampoTexto("Usuário");
+     gbcDir.gridy = 1;
+     gbcDir.insets = new Insets(5, -50, 10, -20);
+     panelDireita.add(txtUsuario, gbcDir);
 
-        txtSenha = criarCampoSenha();
-        btnOlhoSenha = criarBotaoOlho();
+     // Campo Senha com Olho
+     JPanel panelSenhaContainer = new JPanel(new BorderLayout());
+     panelSenhaContainer.setOpaque(false);
 
-        panelSenhaContainer.add(txtSenha, BorderLayout.CENTER);
-        panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
+     txtSenha = criarCampoSenha();
+     btnOlhoSenha = criarBotaoOlho();
 
-        gbcDir.gridy = 2;
-        gbcDir.insets = new Insets(5, -50, 4, -35);
-        panelDireita.add(panelSenhaContainer, gbcDir);
+     panelSenhaContainer.add(txtSenha, BorderLayout.CENTER);
+     panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
 
-     // Esqueceu a Senha (CENTRALIZADO E ABAIXO DO BOTÃO ENTRAR)
-        JLabel lblEsqueceu = new JLabel("Esqueceu a senha?", SwingConstants.CENTER);
-        lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lblEsqueceu.setForeground(CINZA_TEXTO);
-        lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        gbcDir.gridy = 5;
-        gbcDir.insets = new Insets(5, -15, 25, 40); // Margens equilibradas
-        panelDireita.add(lblEsqueceu, gbcDir);
+     gbcDir.gridy = 2;
+     gbcDir.insets = new Insets(5, -50, 4, -35);
+     panelDireita.add(panelSenhaContainer, gbcDir);
 
      // Botão Entrar
-        btnLogin = criarBotaoEspelhado("Entrar");
-        gbcDir.gridy = 4;
-        gbcDir.insets = new Insets(15, -15, 20, 40);
-        panelDireita.add(btnLogin, gbcDir);
+     btnLogin = criarBotaoEspelhado("Entrar");
+     gbcDir.gridy = 4;
+     gbcDir.insets = new Insets(15, -15, 8, 40);
+     panelDireita.add(btnLogin, gbcDir);
 
-     
+     // Esqueceu a Senha (ABAIXO DO BOTÃO ENTRAR)
+     JLabel lblEsqueceu = new JLabel("Esqueceu a senha?", SwingConstants.CENTER);
+     lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+     lblEsqueceu.setForeground(CINZA_TEXTO);
+     lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+     gbcDir.gridy = 5;
+     gbcDir.insets = new Insets(5, -15, 25, 40);
+     panelDireita.add(lblEsqueceu, gbcDir);
 
-        // Botões Redes Sociais
-        JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
-        panelRedes.setOpaque(false);
+     // Botões Redes Sociais
+     JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
+     panelRedes.setOpaque(false);
 
-        panelRedes.add(criarBotaoSocial("Google", "https://google.com"));
-        panelRedes.add(criarBotaoSocial("Instagram", "https://instagram.com"));
-        panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
+     panelRedes.add(criarBotaoSocial("Google", "https://google.com"));
+     panelRedes.add(criarBotaoSocial("Instagram", "https://instagram.com"));
+     panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
 
-        gbcDir.gridy = 6;
-        gbcDir.insets = new Insets(-10, -15, 30, 35);
-        panelDireita.add(panelRedes, gbcDir);
+     gbcDir.gridy = 6;
+     gbcDir.insets = new Insets(-10, -15, 30, 35);
+     panelDireita.add(panelRedes, gbcDir);
 
-        panelCard.add(panelDireita);
+     panelCard.add(panelDireita);
     }
 
     private JTextField criarCampoTexto(String placeholder) {
