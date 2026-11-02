@@ -271,20 +271,45 @@ public class TelaLogin extends JFrame {
      gbcDir.insets = new Insets(5, -50, 4, -35);
      panelDireita.add(panelSenhaContainer, gbcDir);
 
-     // Botão Entrar
+  // Botão Entrar
      btnLogin = criarBotaoEspelhado("Entrar");
      gbcDir.gridy = 4;
      gbcDir.insets = new Insets(15, -15, 8, 40);
      panelDireita.add(btnLogin, gbcDir);
 
-     // Esqueceu a Senha (ABAIXO DO BOTÃO ENTRAR)
-     JLabel lblEsqueceu = new JLabel("Esqueceu a senha?", SwingConstants.CENTER);
+     // Painel Vertical com "Esqueceu a senha?" e "Criar conta" empilhados
+     JPanel panelLinks = new JPanel();
+     panelLinks.setLayout(new BoxLayout(panelLinks, BoxLayout.Y_AXIS));
+     panelLinks.setOpaque(false);
+
+     JLabel lblEsqueceu = new JLabel("Esqueceu a senha?");
      lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
      lblEsqueceu.setForeground(CINZA_TEXTO);
      lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+     lblEsqueceu.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+     JLabel lblCadastrar = new JLabel("Criar conta");
+     lblCadastrar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+     lblCadastrar.setForeground(AZUL_NEON);
+     lblCadastrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+     lblCadastrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+     // Ação de abrir a TelaCadastro
+     lblCadastrar.addMouseListener(new java.awt.event.MouseAdapter() {
+         @Override
+         public void mouseClicked(java.awt.event.MouseEvent e) {
+             new TelaCadastro().setVisible(true);
+             dispose();
+         }
+     });
+
+     panelLinks.add(lblEsqueceu);
+     panelLinks.add(Box.createVerticalStrut(6)); // Espaço discreto entre os links
+     panelLinks.add(lblCadastrar);
+
      gbcDir.gridy = 5;
-     gbcDir.insets = new Insets(5, -15, 25, 40);
-     panelDireita.add(lblEsqueceu, gbcDir);
+     gbcDir.insets = new Insets(5, -15, 20, 40);
+     panelDireita.add(panelLinks, gbcDir);
 
      // Botões Redes Sociais
      JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));

@@ -1,14 +1,16 @@
 package controller;
 
+import java.util.Random;
 import model.Usuario;
 import util.SecurityUtils;
 
 public class AuthController {
 
-    // Valida os dados e prepara o usuário para o cadastro
     public String cadastrarUsuario(String nome, String email, String senha, String confirmaSenha) {
-        if (nome.trim().isEmpty() || email.trim().isEmpty() || senha.isEmpty()) {
-            return "Preencha todos os campos!";
+        if (nome == null || nome.trim().isEmpty() || 
+            email == null || email.trim().isEmpty() || 
+            senha == null || senha.isEmpty()) {
+            return "Preencha todos os campos obrigatórios!";
         }
 
         if (!email.contains("@") || !email.contains(".")) {
@@ -23,27 +25,27 @@ public class AuthController {
             return "A senha deve ter pelo menos 6 caracteres!";
         }
 
-        // Criptografa a senha antes de preparar o objeto
+        // Criptografa a senha
         String senhaHash = SecurityUtils.hashSenha(senha);
         Usuario novoUsuario = new Usuario(nome, email, senhaHash);
 
-        // AQUI: O Integrante 2 vai disponibilizar o DAO para salvar 'novoUsuario' no banco
-        // E o Integrante 5 vai acionar o envio do código por e-mail
+        // Gera código de 6 dígitos para o e-mail
+        String codigo = String.valueOf(100000 + new Random().nextInt(900000));
+        novoUsuario.setCodigoVerificacao(codigo);
+
+        // AQUI: O Integrante 2 (Banco) salva 'novoUsuario' no MySQL
+        // AQUI: O método de envio de e-mail envia 'codigo' para o 'email'
 
         return "OK";
     }
 
-    // Valida os dados do formulário de Login
     public String autenticarUsuario(String email, String senha) {
-        if (email.trim().isEmpty() || senha.isEmpty()) {
+        if (email == null || email.trim().isEmpty() || senha == null || senha.isEmpty()) {
             return "Preencha e-mail e senha!";
         }
 
         String senhaHash = SecurityUtils.hashSenha(senha);
-
-        // AQUI: O Integrante 2 vai buscar no banco de dados se existe um usuário 
-        // com este 'email' e 'senhaHash' e se a conta está com 'ativo = true'
-
+        // AQUI: O Integrante 2 busca no banco se existe email, senhaHash e se ativo = true
         return "OK";
     }
 }

@@ -1,242 +1,280 @@
 package view;
 
+import controller.AuthController;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import javax.swing.*;
-import controller.AuthController;
 
 public class TelaCadastro extends JFrame {
 
-    private static final long serialVersionUID = 1L; // Evita o aviso do Eclipse[cite: 3]
+    private static final long serialVersionUID = 1L;
 
     private JTextField txtNome;
     private JTextField txtEmail;
     private JPasswordField txtSenha;
     private JPasswordField txtConfirmaSenha;
     private JButton btnCadastrar;
-    private JButton btnVoltar;
-    private AuthController controller;
+    private JLabel lblVoltarLogin;
+
+    private AuthController authController = new AuthController();
+
+    private final Color AZUL_NEON   = new Color(0, 136, 255);
+    private final Color BRANCO      = new Color(255, 255, 255);
+    private final Color AZUL_BOTAO  = new Color(14, 126, 238);
+    private final Color BG_CARD     = new Color(15, 20, 28);
+    private final Color BG_CAMPO    = new Color(10, 14, 22);
+    private final Color CINZA_TEXTO = new Color(160, 175, 200);
 
     public TelaCadastro() {
-        controller = new AuthController();
-
-        setTitle("KeePasso - Novo Cadastro");
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setTitle("KeyPasso - Criar Conta");
+        setSize(850, 580);
+        setMinimumSize(new Dimension(800, 520));
+        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Fundo Gradiente Fluido (Roxo Profundo -> Azul Noite)
         JPanel panelBackground = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                GradientPaint gp = new GradientPaint(0, 0, new Color(20, 21, 34), getWidth(), getHeight(), new Color(10, 11, 20));
-                g2d.setPaint(gp);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                GradientPaint gp = new GradientPaint(0, 0, new Color(10, 14, 24), getWidth(), getHeight(), new Color(4, 6, 12));
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+
+                RadialGradientPaint rgb = new RadialGradientPaint(
+                    new Point(120, 100), 450f, new float[]{0.0f, 1.0f},
+                    new Color[]{new Color(0, 136, 255, 20), new Color(0, 0, 0, 0)}
+                );
+                g2.setPaint(rgb);
+                g2.fillRect(0, 0, getWidth(), getHeight());
+                g2.dispose();
             }
         };
         panelBackground.setLayout(new GridBagLayout());
         add(panelBackground);
 
-        // Cartão Central Flutuante com Sombra e Efeito Vidro Translúcido (Glassmorphism)
         JPanel panelCard = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                // 1. Sombra Suave de Fundo
-                g2.setColor(new Color(0, 0, 0, 80));
-                g2.fillRoundRect(5, 5, getWidth() - 10, getHeight() - 10, 24, 24);
-                
-                // 2. Fundo Translúcido
-                g2.setColor(new Color(32, 35, 52, 220));
-                g2.fillRoundRect(0, 0, getWidth() - 8, getHeight() - 8, 24, 24);
-                
-                // 3. Borda Superior de Destaque
-                g2.setColor(new Color(255, 255, 255, 30));
-                g2.drawRoundRect(0, 0, getWidth() - 8, getHeight() - 8, 24, 24);
+
+                g2.setColor(BG_CARD);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+
+                int xLinha = (int) (getWidth() * 0.40);
+                g2.setColor(new Color(255, 255, 255, 40)); 
+                g2.setStroke(new BasicStroke(1.2f));
+                g2.drawLine(xLinha, 40, xLinha, getHeight() - 40);
+
+                g2.setColor(new Color(255, 255, 255, 12));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
                 g2.dispose();
             }
         };
         panelCard.setOpaque(false);
-        panelCard.setLayout(new GridBagLayout());
-        panelCard.setPreferredSize(new Dimension(420, 580));
+        panelCard.setLayout(new GridLayout(1, 2));
+        panelCard.setPreferredSize(new Dimension(760, 480));
         panelBackground.add(panelCard);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(4, 0, 4, 0);
+        // Lado Esquerdo
+        JPanel panelEsquerda = new JPanel(new GridBagLayout());
+        panelEsquerda.setOpaque(false);
+        GridBagConstraints gbcEsq = new GridBagConstraints();
+        gbcEsq.gridx = 0;
 
-        // Título Estilizado
-        JLabel lblTitulo = new JLabel("Criar Conta", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        lblTitulo.setForeground(Color.WHITE);
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        gbc.insets = new Insets(15, 0, 2, 0);
-        panelCard.add(lblTitulo, gbc);
+        JLabel lblTextoLogo = new JLabel("<html><span style='color: #FFFFFF;'>Key</span><span style='color: #0C264B;'><b>Passo</b></span><span style='color: #FFE600;'><b>*</b></span></html>");
+        lblTextoLogo.setFont(new Font("Segoe UI", Font.PLAIN, 32));
 
-        // Subtítulo
-        JLabel lblSub = new JLabel("Preencha os dados para se cadastrar", SwingConstants.CENTER);
-        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        lblSub.setForeground(new Color(148, 163, 184));
-        gbc.gridy = 1; gbc.insets = new Insets(0, 0, 15, 0);
-        panelCard.add(lblSub, gbc);
+        JLabel lblSub = new JLabel("<html><center style='color: #A0AFC8;'>Junte-se à nossa<br>plataforma de segurança.</center></html>");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // Campo Nome
-        panelCard.add(criarLabel("NOME COMPLETO"), ajustarGbc(gbc, 2));
-        txtNome = criarCampoTexto();
-        panelCard.add(txtNome, ajustarGbc(gbc, 3));
+        gbcEsq.gridy = 0; gbcEsq.insets = new Insets(0, 0, 15, 0);
+        panelEsquerda.add(lblTextoLogo, gbcEsq);
+        gbcEsq.gridy = 1;
+        panelEsquerda.add(lblSub, gbcEsq);
+        panelCard.add(panelEsquerda);
 
-        // Campo E-mail
-        panelCard.add(criarLabel("E-MAIL"), ajustarGbc(gbc, 4));
-        txtEmail = criarCampoTexto();
-        panelCard.add(txtEmail, ajustarGbc(gbc, 5));
+        // Lado Direito (Formulário)
+        JPanel panelDireita = new JPanel(new GridBagLayout());
+        panelDireita.setOpaque(false);
+        GridBagConstraints gbcDir = new GridBagConstraints();
+        gbcDir.fill = GridBagConstraints.HORIZONTAL;
+        gbcDir.gridx = 0; gbcDir.insets = new Insets(4, 25, 4, 25);
 
-        // Campo Senha
-        panelCard.add(criarLabel("SENHA"), ajustarGbc(gbc, 6));
-        txtSenha = criarCampoSenha();
-        panelCard.add(txtSenha, ajustarGbc(gbc, 7));
+        JLabel lblTitulo = new JLabel("<html><span style='letter-spacing: 1.5px; color: #FFFFFF;'>CRIAR CONTA</span><span style='color: #00D4FF;'>*</span></html>");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
 
-        // Campo Confirmar Senha
-        panelCard.add(criarLabel("CONFIRMAR SENHA"), ajustarGbc(gbc, 8));
-        txtConfirmaSenha = criarCampoSenha();
-        panelCard.add(txtConfirmaSenha, ajustarGbc(gbc, 9));
+        gbcDir.gridy = 0; gbcDir.insets = new Insets(10, 25, 10, 25);
+        panelDireita.add(lblTitulo, gbcDir);
 
-        // Botão Finalizar Cadastro (Com a mesma cor do Botão de Entrar da TelaLogin)
-        btnCadastrar = criarBotaoGradiente("FINALIZAR CADASTRO", new Color(99, 102, 241), new Color(139, 92, 246));
-        gbc.gridy = 10; gbc.insets = new Insets(20, 0, 8, 0);
-        panelCard.add(btnCadastrar, gbc);
+        txtNome = criarCampoTexto("Nome Completo");
+        gbcDir.gridy = 1; panelDireita.add(txtNome, gbcDir);
 
-        // Botão Voltar (Link Estilizado)
-        btnVoltar = criarBotaoOutline("← Voltar ao Login");
-        gbc.gridy = 11; gbc.insets = new Insets(0, 0, 10, 0);
-        panelCard.add(btnVoltar, gbc);
+        txtEmail = criarCampoTexto("E-mail");
+        gbcDir.gridy = 2; panelDireita.add(txtEmail, gbcDir);
+
+        txtSenha = criarCampoSenha("Senha");
+        gbcDir.gridy = 3; panelDireita.add(txtSenha, gbcDir);
+
+        txtConfirmaSenha = criarCampoSenha("Confirmar Senha");
+        gbcDir.gridy = 4; panelDireita.add(txtConfirmaSenha, gbcDir);
+
+        btnCadastrar = criarBotaoEspelhado("Cadastrar");
+        gbcDir.gridy = 5; gbcDir.insets = new Insets(15, 25, 5, 25);
+        panelDireita.add(btnCadastrar, gbcDir);
+
+        lblVoltarLogin = new JLabel("Já tem uma conta? Faça login", SwingConstants.CENTER);
+        lblVoltarLogin.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblVoltarLogin.setForeground(AZUL_NEON);
+        lblVoltarLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        gbcDir.gridy = 6; gbcDir.insets = new Insets(5, 25, 10, 25);
+        panelDireita.add(lblVoltarLogin, gbcDir);
+
+        panelCard.add(panelDireita);
 
         // Eventos
-        btnCadastrar.addActionListener(e -> acaoSalvar());
-        btnVoltar.addActionListener(e -> {
-            new TelaLogin().setVisible(true);
-            dispose();
+        btnCadastrar.addActionListener(e -> {
+            String nome = txtNome.getText();
+            String email = txtEmail.getText();
+            String senha = new String(txtSenha.getPassword());
+            String confirmaSenha = new String(txtConfirmaSenha.getPassword());
+
+            String resultado = authController.cadastrarUsuario(nome, email, senha, confirmaSenha);
+
+            if ("OK".equals(resultado)) {
+                JOptionPane.showMessageDialog(this, "Cadastro realizado! Verifique seu e-mail para o código.", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, resultado, "Atenção", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        lblVoltarLogin.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                new TelaLogin().setVisible(true);
+                dispose();
+            }
         });
     }
 
-    private JLabel criarLabel(String texto) {
-        JLabel label = new JLabel(texto);
-        label.setFont(new Font("Segoe UI", Font.BOLD, 11));
-        label.setForeground(new Color(148, 163, 184));
-        return label;
-    }
-
-    private JTextField criarCampoTexto() {
-        JTextField field = new JTextField();
+    private JTextField criarCampoTexto(String placeholder) {
+        JTextField field = new JTextField(placeholder);
         field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        field.setBackground(new Color(21, 23, 35));
-        field.setForeground(Color.WHITE);
-        field.setCaretColor(new Color(139, 92, 246));
+        field.setBackground(BG_CAMPO);
+        field.setForeground(CINZA_TEXTO);
+        field.setCaretColor(AZUL_NEON);
         field.setPreferredSize(new Dimension(0, 36));
 
-        Color bordaPadrao = new Color(51, 65, 85);
-        Color bordaFoco = new Color(139, 92, 246); // Borda roxa neon ao focar (harmoniza com o botão)
-
+        Color bordaPadrao = new Color(35, 48, 70);
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(bordaPadrao, 1, true),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(5, 12, 5, 12)
         ));
 
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
+                if (field.getText().equals(placeholder)) {
+                    field.setText(""); field.setForeground(BRANCO);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(bordaFoco, 2, true),
-                    BorderFactory.createEmptyBorder(4, 9, 4, 9)
+                    BorderFactory.createLineBorder(AZUL_NEON, 1, true),
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
             @Override
             public void focusLost(FocusEvent e) {
+                if (field.getText().isEmpty()) {
+                    field.setText(placeholder); field.setForeground(CINZA_TEXTO);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(bordaPadrao, 1, true),
-                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
         });
         return field;
     }
 
-    private JPasswordField criarCampoSenha() {
-        JPasswordField field = new JPasswordField();
+    private JPasswordField criarCampoSenha(String placeholder) {
+        JPasswordField field = new JPasswordField(placeholder);
         field.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        field.setBackground(new Color(21, 23, 35));
-        field.setForeground(Color.WHITE);
-        field.setCaretColor(new Color(139, 92, 246));
+        field.setBackground(BG_CAMPO);
+        field.setForeground(CINZA_TEXTO);
+        field.setCaretColor(AZUL_NEON);
+        field.setEchoChar((char) 0);
         field.setPreferredSize(new Dimension(0, 36));
 
-        Color bordaPadrao = new Color(51, 65, 85);
-        Color bordaFoco = new Color(139, 92, 246);
-
+        Color bordaPadrao = new Color(35, 48, 70);
         field.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(bordaPadrao, 1, true),
-            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+            BorderFactory.createEmptyBorder(5, 12, 5, 12)
         ));
 
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
+                String senhaStr = new String(field.getPassword());
+                if (senhaStr.equals(placeholder)) {
+                    field.setText(""); field.setForeground(BRANCO); field.setEchoChar('•');
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(bordaFoco, 2, true),
-                    BorderFactory.createEmptyBorder(4, 9, 4, 9)
+                    BorderFactory.createLineBorder(AZUL_NEON, 1, true),
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
             @Override
             public void focusLost(FocusEvent e) {
+                String senhaStr = new String(field.getPassword());
+                if (senhaStr.isEmpty()) {
+                    field.setText(placeholder); field.setForeground(CINZA_TEXTO); field.setEchoChar((char) 0);
+                }
                 field.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createLineBorder(bordaPadrao, 1, true),
-                    BorderFactory.createEmptyBorder(5, 10, 5, 10)
+                    BorderFactory.createEmptyBorder(5, 12, 5, 12)
                 ));
             }
         });
         return field;
     }
 
-    private GridBagConstraints ajustarGbc(GridBagConstraints gbc, int y) {
-        gbc.gridy = y;
-        gbc.insets = (y % 2 == 0) ? new Insets(5, 0, 2, 0) : new Insets(0, 0, 2, 0);
-        return gbc;
-    }
-
-    private JButton criarBotaoGradiente(String texto, Color corInicio, Color corFim) {
+    private JButton criarBotaoEspelhado(String texto) {
         JButton btn = new JButton(texto) {
             private static final long serialVersionUID = 1L;
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                GradientPaint gp = getModel().isRollover() 
-                    ? new GradientPaint(0, 0, corInicio.brighter(), getWidth(), 0, corFim.brighter())
-                    : new GradientPaint(0, 0, corInicio, getWidth(), 0, corFim);
-                
+
+                int w = getWidth(); int h = getHeight();
+                boolean hover = getModel().isRollover();
+
+                Color cor1 = hover ? new Color(0, 160, 255) : AZUL_BOTAO;
+                Color cor2 = hover ? new Color(0, 100, 220) : new Color(10, 80, 180);
+
+                GradientPaint gp = new GradientPaint(0, 0, cor1, 0, h, cor2);
                 g2.setPaint(gp);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
-                
-                g2.setColor(Color.WHITE);
-                g2.setFont(getFont());
+                g2.fill(new RoundRectangle2D.Float(0, 0, w, h, 14, 14));
+
+                g2.setColor(BRANCO); g2.setFont(getFont());
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth(getText())) / 2;
-                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                g2.drawString(getText(), x, y);
+                int xText = (w - fm.stringWidth(getText())) / 2;
+                int yText = (h + fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(getText(), xText, yText);
                 g2.dispose();
             }
         };
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        btn.setPreferredSize(new Dimension(0, 42));
+
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btn.setPreferredSize(new Dimension(0, 40));
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
@@ -244,42 +282,7 @@ public class TelaCadastro extends JFrame {
         return btn;
     }
 
-    private JButton criarBotaoOutline(String texto) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btn.setForeground(new Color(148, 163, 184));
-        btn.setContentAreaFilled(false);
-        btn.setBorderPainted(false);
-        btn.setFocusPainted(false);
-        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        btn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setForeground(Color.WHITE);
-            }
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setForeground(new Color(148, 163, 184));
-            }
-        });
-        return btn;
-    }
-
-    private void acaoSalvar() {
-        String nome = txtNome.getText();
-        String email = txtEmail.getText();
-        String senha = new String(txtSenha.getPassword());
-        String confirmaSenha = new String(txtConfirmaSenha.getPassword());
-
-        String resultado = controller.cadastrarUsuario(nome, email, senha, confirmaSenha);
-
-        if (resultado.equals("OK")) {
-            JOptionPane.showMessageDialog(this, "Cadastro validado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            new TelaLogin().setVisible(true);
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, resultado, "Aviso de Validação", JOptionPane.WARNING_MESSAGE);
-        }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new TelaCadastro().setVisible(true));
     }
 }
