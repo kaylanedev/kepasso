@@ -1,5 +1,6 @@
 package view;
 
+import controller.AuthController;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -19,11 +20,13 @@ public class TelaLogin extends JFrame {
     private JButton btnOlhoSenha;
     private boolean senhaVisivel = false;
 
-    // Cores exatas da nova imagem (nova_2.png)
-    private final Color AZUL_NEON   = new Color(0, 136, 255); // Azul brilhante da chave
-    private final Color BG_DARK_IMG = new Color(13, 17, 23);   // Fundo escuro
+    // Instância do Controller para Autenticação
+    private AuthController authController = new AuthController();
+
+    // Cores exatas do design (Estilo Dark / Glassmorphism)
+    private final Color AZUL_NEON   = new Color(0, 136, 255);
+    private final Color BG_DARK_IMG = new Color(13, 17, 23);
     private final Color BRANCO      = new Color(255, 255, 255);
-    
     private final Color AZUL_BOTAO  = new Color(14, 126, 238);
     private final Color BG_CARD     = new Color(15, 20, 28);
     private final Color BG_CAMPO    = new Color(10, 14, 22);
@@ -68,7 +71,7 @@ public class TelaLogin extends JFrame {
         panelBackground.setLayout(new GridBagLayout());
         add(panelBackground);
 
-     // Cartão Principal Glassmorphism com Linha Divisória Discreta
+        // Cartão Principal Glassmorphism com Linha Divisória
         JPanel panelCard = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -76,22 +79,16 @@ public class TelaLogin extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 1. Fundo do Cartão Principal
                 g2.setColor(BG_CARD);
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
 
-                // 2. Linha Divisória Reta e Discreta (Cinza/Semitransparente)
-                int xLinha = (int) (getWidth() * 0.45); // Posição horizontal (35% da largura)
-                int margemVertical = 40;                 // Espaço em cima e em baixo para não ir de ponta a ponta
+                int xLinha = (int) (getWidth() * 0.45);
+                int margemVertical = 40;
 
-                // Cor cinza suave e sutil (com transparência/alpha de 40)
                 g2.setColor(new Color(255, 255, 255, 40)); 
-                g2.setStroke(new BasicStroke(1.2f));       // Espessura da linha
-                
-                // Desenha a linha vertical
+                g2.setStroke(new BasicStroke(1.2f)); 
                 g2.drawLine(xLinha, margemVertical, xLinha, getHeight() - margemVertical);
 
-                // 3. Borda sutil ao redor de todo o cartão
                 g2.setColor(new Color(255, 255, 255, 12));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 24, 24);
 
@@ -113,7 +110,6 @@ public class TelaLogin extends JFrame {
         gbcEsq.gridx = 0;
         gbcEsq.anchor = GridBagConstraints.CENTER;
 
-     // DESENHO DA CHAVE 
         JPanel panelLogo = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -125,27 +121,20 @@ public class TelaLogin extends JFrame {
                 int cx = getWidth() / 2 - 25;
                 int cy = getHeight() / 2;
 
-                // Cor Azul Escuro para a haste e o anel externo
                 Color AZUL_ESCURO = new Color(12, 38, 75);
 
-                // 1. Anel Circular Externo (AZUL ESCURO)
                 g2.setColor(AZUL_ESCURO);
                 g2.setStroke(new BasicStroke(7.0f)); 
                 g2.drawArc(cx - 45, cy - 45, 90, 91, 28, 360);
                 
-                // 2. Haste Principal da Chave (AZUL ESCURO com ponta direita arredondada)
-                // Recuamos para 'cx - 15' (dentro do disco) e esticamos a largura para 101.
-                // Os cantos (12, 12) arredondam a ponta direita visível.
                 g2.setColor(AZUL_ESCURO);
                 g2.fillRoundRect(cx - 15, cy - 8, 108, 12, 12, 12);
 
-                // 3. O Segredo em formato "U"
-                int xInicioU = cx + 56; // Início do U na haste
-                int yTopU = cy + 4;     // Topo do U (onde encosta na haste principal)
-                int larguraU = 19;     // Largura total do "U"
-                int alturaU = 14;      // Altura/profundidade do "U"
+                int xInicioU = cx + 56;
+                int yTopU = cy + 4;     
+                int larguraU = 19;     
+                int alturaU = 14;      
 
-                // >>> COR Trocada para Azul Neon <<<
                 g2.setColor(AZUL_NEON); 
                 g2.setStroke(new BasicStroke(7.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
@@ -153,15 +142,11 @@ public class TelaLogin extends JFrame {
                 int[] yPoints = {yTopU, yTopU + alturaU, yTopU + alturaU, yTopU};
 
                 g2.drawPolyline(xPoints, yPoints, 4);
-
-                // RESTAURA O STROKE PADRÃO
                 g2.setStroke(new BasicStroke(1.0f));
 
-                // 4. Disco Central (AMARELO NEON) - Desenhado por cima para esconder a base da haste
-                g2.setColor(new Color(255, 230, 0)); // Amarelo vibrante/neon
+                g2.setColor(new Color(255, 230, 0));
                 g2.fillOval(cx - 22, cy - 22, 44, 44);
 
-                // 5. Furo Centro Escuro
                 g2.setColor(BG_DARK_IMG);
                 g2.fillOval(cx - 9, cy - 9, 18, 18);
 
@@ -176,21 +161,16 @@ public class TelaLogin extends JFrame {
         gbcEsq.insets = new Insets(0, 0, 5, 0);
         panelEsquerda.add(panelLogo, gbcEsq);
 
-        // Texto "KeyPasso"
-     // Texto "KeyPasso" Bicolor (Mantém a estrutura original intacta)
         JLabel lblTextoLogo = new JLabel("<html><span style='color: #FFFFFF;'>Key</span><span style='color: #0C264B;'>"
-        		+ "<b>Passo</b></span><span style='color: #FFE600;'>"
-        		+ "<b>*</b></span></html>");
+                + "<b>Passo</b></span><span style='color: #FFE600;'>"
+                + "<b>*</b></span></html>");
         lblTextoLogo.setFont(new Font("Segoe UI", Font.PLAIN, 28));
 
         gbcEsq.gridy = 1;
         gbcEsq.anchor = GridBagConstraints.WEST;
-        gbcEsq.insets = new Insets(0, 30, 0, 0); // Mantém a margem que deu certo para mover à esquerda
+        gbcEsq.insets = new Insets(0, 30, 0, 0);
 
         panelEsquerda.add(lblTextoLogo, gbcEsq);
-        gbcEsq.anchor = GridBagConstraints.CENTER;
-        
-        // Reseta o anchor para CENTER para não afetar os próximos componentes
         gbcEsq.anchor = GridBagConstraints.CENTER;
 
         panelCard.add(panelEsquerda);
@@ -206,7 +186,6 @@ public class TelaLogin extends JFrame {
         gbcDir.gridx = 0;
         gbcDir.insets = new Insets(6, 35, 6, 35);
 
-     // Cabeçalho com Indicador de Foco Lateral (Glow Bar)
         JPanel panelCabecalhoForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)) {
             private static final long serialVersionUID = 1L;
             @Override
@@ -215,7 +194,6 @@ public class TelaLogin extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // Barra Indicadora Neon à esquerda (Espessura 4px, altura proporcional ao bloco)
                 g2.setColor(AZUL_NEON);
                 g2.fillRoundRect(0, 4, 4, getHeight() - 8, 4, 4);
 
@@ -223,13 +201,12 @@ public class TelaLogin extends JFrame {
             }
         };
         panelCabecalhoForm.setOpaque(false);
-        panelCabecalhoForm.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 0)); // Afasta o texto da barra
+        panelCabecalhoForm.setBorder(BorderFactory.createEmptyBorder(0, 14, 0, 0));
 
         JPanel panelTextoCabecalho = new JPanel();
         panelTextoCabecalho.setLayout(new BoxLayout(panelTextoCabecalho, BoxLayout.Y_AXIS));
         panelTextoCabecalho.setOpaque(false);
 
-        // Título "ENTRAR" em caixa alta com letter-spacing
         JLabel lblEntrar = new JLabel("<html><span style='letter-spacing: 1.5px; color: #FFFFFF;'>ENTRAR</span><span style='color: #00D4FF;'>*</span></html>");
         lblEntrar.setFont(new Font("Segoe UI", Font.BOLD, 24));
 
@@ -248,82 +225,119 @@ public class TelaLogin extends JFrame {
         gbcDir.insets = new Insets(20, -50, 18, -20);
         panelDireita.add(panelCabecalhoForm, gbcDir);
 
-     // Recompoe o alinhamento para os próximos componentes
-     gbcDir.anchor = GridBagConstraints.CENTER;
+        gbcDir.anchor = GridBagConstraints.CENTER;
 
-     // Campo Usuário
-     txtUsuario = criarCampoTexto("Usuário");
-     gbcDir.gridy = 1;
-     gbcDir.insets = new Insets(5, -50, 10, -20);
-     panelDireita.add(txtUsuario, gbcDir);
+        // Campo Usuário/E-mail
+        txtUsuario = criarCampoTexto("Usuário ou E-mail");
+        gbcDir.gridy = 1;
+        gbcDir.insets = new Insets(5, -50, 10, -20);
+        panelDireita.add(txtUsuario, gbcDir);
 
-     // Campo Senha com Olho
-     JPanel panelSenhaContainer = new JPanel(new BorderLayout());
-     panelSenhaContainer.setOpaque(false);
+        // Campo Senha com Olho
+        JPanel panelSenhaContainer = new JPanel(new BorderLayout());
+        panelSenhaContainer.setOpaque(false);
 
-     txtSenha = criarCampoSenha();
-     btnOlhoSenha = criarBotaoOlho();
+        txtSenha = criarCampoSenha();
+        btnOlhoSenha = criarBotaoOlho();
 
-     panelSenhaContainer.add(txtSenha, BorderLayout.CENTER);
-     panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
+        panelSenhaContainer.add(txtSenha, BorderLayout.CENTER);
+        panelSenhaContainer.add(btnOlhoSenha, BorderLayout.EAST);
 
-     gbcDir.gridy = 2;
-     gbcDir.insets = new Insets(5, -50, 4, -35);
-     panelDireita.add(panelSenhaContainer, gbcDir);
+        gbcDir.gridy = 2;
+        gbcDir.insets = new Insets(5, -50, 4, -35);
+        panelDireita.add(panelSenhaContainer, gbcDir);
 
-  // Botão Entrar
-     btnLogin = criarBotaoEspelhado("Entrar");
-     gbcDir.gridy = 4;
-     gbcDir.insets = new Insets(15, -15, 8, 40);
-     panelDireita.add(btnLogin, gbcDir);
+        // Botão Entrar
+        btnLogin = criarBotaoEspelhado("Entrar");
+        gbcDir.gridy = 4;
+        gbcDir.insets = new Insets(15, -15, 8, 40);
+        panelDireita.add(btnLogin, gbcDir);
 
-     // Painel Vertical com "Esqueceu a senha?" e "Criar conta" empilhados
-     JPanel panelLinks = new JPanel();
-     panelLinks.setLayout(new BoxLayout(panelLinks, BoxLayout.Y_AXIS));
-     panelLinks.setOpaque(false);
+        // ==========================================
+        // FLUXO DE EVENTO DO BOTÃO "ENTRAR"
+        // ==========================================
+        btnLogin.addActionListener(e -> {
+            String emailOuUsuario = txtUsuario.getText().trim();
+            String senha = new String(txtSenha.getPassword());
 
-     JLabel lblEsqueceu = new JLabel("Esqueceu a senha?");
-     lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-     lblEsqueceu.setForeground(CINZA_TEXTO);
-     lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
-     lblEsqueceu.setAlignmentX(Component.CENTER_ALIGNMENT);
+            if (emailOuUsuario.isEmpty() || emailOuUsuario.equals("Usuário ou E-mail")) {
+                JOptionPane.showMessageDialog(this, "Informe seu e-mail ou usuário!", "Atenção", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-     JLabel lblCadastrar = new JLabel("Criar conta");
-     lblCadastrar.setFont(new Font("Segoe UI", Font.BOLD, 12));
-     lblCadastrar.setForeground(AZUL_NEON);
-     lblCadastrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-     lblCadastrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+            if (senha.isEmpty() || senha.equals("Senha")) {
+                JOptionPane.showMessageDialog(this, "Informe sua senha!", "Atenção", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-     // Ação de abrir a TelaCadastro
-     lblCadastrar.addMouseListener(new java.awt.event.MouseAdapter() {
-         @Override
-         public void mouseClicked(java.awt.event.MouseEvent e) {
-             new TelaCadastro().setVisible(true);
-             dispose();
-         }
-     });
+            // Valida as credenciais chamando o método boolean do AuthController
+            boolean autenticado = authController.autenticarUsuario(emailOuUsuario, senha);
 
-     panelLinks.add(lblEsqueceu);
-     panelLinks.add(Box.createVerticalStrut(6)); // Espaço discreto entre os links
-     panelLinks.add(lblCadastrar);
+            if (autenticado) {
+                JOptionPane.showMessageDialog(this, "Seja bem-vindo de volta ao KeyPasso!", "Login Efetuado", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Abre a Tela Principal passando o e-mail/usuário informado
+                new TelaPrincipal(emailOuUsuario).setVisible(true);
+                dispose(); // Esconde/fecha a TelaLogin
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuário/E-mail ou senha incorretos!", "Erro de Autenticação", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
-     gbcDir.gridy = 5;
-     gbcDir.insets = new Insets(5, -15, 20, 40);
-     panelDireita.add(panelLinks, gbcDir);
+        // Painel com Links
+        JPanel panelLinks = new JPanel();
+        panelLinks.setLayout(new BoxLayout(panelLinks, BoxLayout.Y_AXIS));
+        panelLinks.setOpaque(false);
 
-     // Botões Redes Sociais
-     JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
-     panelRedes.setOpaque(false);
+        JLabel lblEsqueceu = new JLabel("Esqueceu a senha?");
+        lblEsqueceu.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblEsqueceu.setForeground(CINZA_TEXTO);
+        lblEsqueceu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblEsqueceu.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        lblEsqueceu.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                new TelaEsqueceuSenha().setVisible(true);
+                dispose();
+            }
+        });
 
-     panelRedes.add(criarBotaoSocial("Google", "https://google.com"));
-     panelRedes.add(criarBotaoSocial("Instagram", "https://instagram.com"));
-     panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
+        JLabel lblCadastrar = new JLabel("Criar conta");
+        lblCadastrar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblCadastrar.setForeground(AZUL_NEON);
+        lblCadastrar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        lblCadastrar.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-     gbcDir.gridy = 6;
-     gbcDir.insets = new Insets(-10, -15, 30, 35);
-     panelDireita.add(panelRedes, gbcDir);
+        lblCadastrar.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                new TelaCadastro().setVisible(true);
+                dispose();
+            }
+        });
 
-     panelCard.add(panelDireita);
+        panelLinks.add(lblEsqueceu);
+        panelLinks.add(Box.createVerticalStrut(6));
+        panelLinks.add(lblCadastrar);
+
+        gbcDir.gridy = 5;
+        gbcDir.insets = new Insets(5, -15, 20, 40);
+        panelDireita.add(panelLinks, gbcDir);
+
+        // Botões Redes Sociais
+        JPanel panelRedes = new JPanel(new FlowLayout(FlowLayout.CENTER, 14, 0));
+        panelRedes.setOpaque(false);
+
+        panelRedes.add(criarBotaoSocial("Google", "https://google.com"));
+        panelRedes.add(criarBotaoSocial("Instagram", "https://instagram.com"));
+        panelRedes.add(criarBotaoSocial("GitHub", "https://github.com"));
+
+        gbcDir.gridy = 6;
+        gbcDir.insets = new Insets(-10, -15, 30, 35);
+        panelDireita.add(panelRedes, gbcDir);
+
+        panelCard.add(panelDireita);
     }
 
     private JTextField criarCampoTexto(String placeholder) {
